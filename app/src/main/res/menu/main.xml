@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:title="Credits"
+        android:id="@+id/credits"
+        android:orderInCategory="100" />
+
+    <item
+        android:orderInCategory="200"
+        android:id="@+id/home"
+        android:title="Home" />
+
+    <item
+        android:orderInCategory="300"
+        android:id="@+id/company"
+        android:title="Add Company" />
+
+    <item
+        android:orderInCategory="400"
+        android:id="@+id/employee"
+        android:title="Add Employee" />
+
+    <item
+        android:orderInCategory="500"
+        android:id="@+id/order"
+        android:title="Add Order" />
+
+    <item
+        android:orderInCategory="700"
+        android:id="@+id/show"
+        android:title="Show data " />
+
+    <item
+        android:orderInCategory="800"
+        android:id="@+id/sort"
+        android:title="Sort and Order " />
+
+    <item
+        android:orderInCategory="900"
+        android:id="@+id/change"
+        android:title="Change Phone " />
+
+</menu>
