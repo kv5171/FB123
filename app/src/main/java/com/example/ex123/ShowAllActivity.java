@@ -14,6 +14,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Toast;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -51,104 +56,103 @@ public class ShowAllActivity extends AppCompatActivity implements AdapterView.On
         mealsArray = new ArrayList<>();
         ordersArray = new ArrayList<>();
 
-//        getEmployees();
-//        getCompanies();
-//        getMeals();
-//        getOrders();
+        getEmployees();
+        getCompanies();
+        getMeals();
+        getOrders();
     }
 
     /**
      * get all employees from db
-
+     */
     private void getEmployees()
     {
-        db=hlp.getReadableDatabase();
-        crsr = db.query(Employee.TABLE_EMPLOYEE, null, null, null, null, null, null, null);
-
-        int col1 = crsr.getColumnIndex(Employee.EMPLOYEE_ID);
-        int col2 = crsr.getColumnIndex(Employee.COMPANY);
-        int col3 = crsr.getColumnIndex(Employee.FIRST_NAME);
-        int col4 = crsr.getColumnIndex(Employee.LAST_NAME);
-        int col5 = crsr.getColumnIndex(Employee.PHONE);
-        int col6 = crsr.getColumnIndex(Employee.KEY_ID);
-
-        crsr.moveToFirst();
         employeesArray.add("id | key | name | phone | company");
-        while (!crsr.isAfterLast()) {
-            employeesArray.add(crsr.getString(col1) + " | " + crsr.getString(col6) + " | " + crsr.getString(col3) + " " + crsr.getString(col4) + " | " + crsr.getString(col5) + " | " + crsr.getString(col2));
-            crsr.moveToNext();
-        }
-        crsr.close();
-    }*/
+
+        FBref.refEmployees.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot data : dataSnapshot.getChildren())
+                {
+                    employeesArray.add(data.getKey() + " | " + data.child("keyId").getValue() + " | " + data.child("firstName").getValue() + " " + data.child("lastName").getValue() + " | " + data.child("phone").getValue() + " | " + data.child("company").getValue());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
 
     /**
      * get all companies from db
-
+     */
     private void getCompanies()
     {
-        db=hlp.getReadableDatabase();
-        crsr = db.query(Company.TABLE_COMPANY, null, null, null, null, null, null, null);
-
-        int col1 = crsr.getColumnIndex(Company.COMPANY_NUMBER);
-        int col2 = crsr.getColumnIndex(Company.NAME);
-        int col3 = crsr.getColumnIndex(Company.FIRST_PHONE);
-        int col4 = crsr.getColumnIndex(Company.SECOND_PHONE);
-
-        crsr.moveToFirst();
         companiesArray.add("id | name | phone1 | phone2");
-        while (!crsr.isAfterLast()) {
-            companiesArray.add(crsr.getString(col1) + " | " + crsr.getString(col2) + " | " + crsr.getString(col3) + " | " + crsr.getString(col4));
-            crsr.moveToNext();
-        }
-        crsr.close();
-    }*/
+
+        FBref.refCompanies.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot data : dataSnapshot.getChildren())
+                {
+                    companiesArray.add(data.getKey() + " | " + data.child("name").getValue() + " | " + data.child("firstPhone").getValue() + " | " + data.child("secondPhone").getValue());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
 
     /**
      * get all meals from database
-
+     */
     private void getMeals()
     {
-        db=hlp.getReadableDatabase();
-        crsr = db.query(Meal.TABLE_MEAL, null, null, null, null, null, null, null);
-
-        int col1 = crsr.getColumnIndex(Meal.MEAL_ID);
-        int col2 = crsr.getColumnIndex(Meal.FIRST_MEAL);
-        int col3 = crsr.getColumnIndex(Meal.MAIN_MEAL);
-        int col4 = crsr.getColumnIndex(Meal.EXTRA);
-        int col5 = crsr.getColumnIndex(Meal.DESSERT);
-        int col6 = crsr.getColumnIndex(Meal.DRINK);
-
-        crsr.moveToFirst();
         mealsArray.add("id | meal1 | meal2 | extra | dessert | drink");
-        while (!crsr.isAfterLast()) {
-            mealsArray.add(crsr.getString(col1) + " | " + crsr.getString(col2) + " | " + crsr.getString(col3) + " | " + crsr.getString(col4) + " | " + crsr.getString(col5) + " | " + crsr.getString(col6));
-            crsr.moveToNext();
-        }
-        crsr.close();
-    }*/
+
+        FBref.refMeals.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot data : dataSnapshot.getChildren())
+                {
+                    mealsArray.add(data.getKey() + " | " + data.child("firstMeal").getValue() + " | " + data.child("mainMeal").getValue() + " | " + data.child("extra").getValue() + " | " + data.child("dessert").getValue() + " | " + data.child("drink").getValue());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
 
     /**
      * get all orders from database
-
+     */
     private void getOrders()
     {
-        db=hlp.getReadableDatabase();
-        crsr = db.query(Order.TABLE_ORDER, null, null, null, null, null, null, null);
-
-        int col1 = crsr.getColumnIndex(Order.ORDER_DATE);
-        int col2 = crsr.getColumnIndex(Order.ORDER_TIME);
-        int col3 = crsr.getColumnIndex(Order.WORKER_ID);
-        int col4 = crsr.getColumnIndex(Order.MEAL_ID);
-        int col5 = crsr.getColumnIndex(Order.COMPANY);
-
-        crsr.moveToFirst();
         ordersArray.add("date | time | worker | mealId | company");
-        while (!crsr.isAfterLast()) {
-            ordersArray.add(crsr.getString(col1) + " | " + crsr.getString(col2) + " | " + crsr.getString(col3) + " | " + crsr.getString(col4) + " | " + crsr.getString(col5));
-            crsr.moveToNext();
-        }
-        crsr.close();
-    }*/
+
+        FBref.refOrders.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot data : dataSnapshot.getChildren())
+                {
+                    ordersArray.add(data.getKey().replace("@", " | ") + " | " + data.child("employeeId").getValue() + " | " + data.child("mealId").getValue() + " | " + data.child("company").getValue());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long l) {
