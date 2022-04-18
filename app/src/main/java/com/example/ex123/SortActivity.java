@@ -15,6 +15,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 
 /**
@@ -28,7 +32,7 @@ public class SortActivity extends AppCompatActivity implements AdapterView.OnIte
     Spinner options;
     ArrayAdapter<String> adp;
 
-    String [] allOptions = {"show just ids", "show just names", "order Employees by id"};
+    String [] allOptions = {"choose option", "show just ids", "show just names", "order Employees by id"};
     ArrayList<String> idsArray, namesArray, orderEmployeesArray;
 
     @Override
@@ -49,73 +53,32 @@ public class SortActivity extends AppCompatActivity implements AdapterView.OnIte
         namesArray = new ArrayList<>();
         orderEmployeesArray = new ArrayList<>();
 
-//        getIds();
-//        getNames();
-//        getOrderedEmployees();
+        getData();
     }
 
-    /**
-     *  get all id employees from the db
-
-    private void getIds()
+    private void getData()
     {
-        db=hlp.getReadableDatabase();
-        crsr = db.query(Employee.TABLE_EMPLOYEE, new String[]{Employee.EMPLOYEE_ID}, null, null, null, null, null, null);
-
-        int col1 = crsr.getColumnIndex(Employee.EMPLOYEE_ID);
-
-        crsr.moveToFirst();
-        idsArray.add("id");
-        while (!crsr.isAfterLast()) {
-            idsArray.add(crsr.getString(col1));
-            crsr.moveToNext();
-        }
-        crsr.close();
-    }*/
-
-    /**
-     *  get all names employees from db
-
-    private void getNames()
-    {
-        db=hlp.getReadableDatabase();
-        crsr = db.query(Employee.TABLE_EMPLOYEE, new String[]{Employee.FIRST_NAME, Employee.LAST_NAME}, null, null, null, null, null, null);
-
-        int col1 = crsr.getColumnIndex(Employee.FIRST_NAME);
-        int col2 = crsr.getColumnIndex(Employee.LAST_NAME);
-
-        crsr.moveToFirst();
-        namesArray.add("firstName lastName");
-        while (!crsr.isAfterLast()) {
-            namesArray.add(crsr.getString(col1) + " " + crsr.getString(col2));
-            crsr.moveToNext();
-        }
-        crsr.close();
-    }*/
-
-    /**
-     *  get all the id employees from the db sorted
-
-    private void getOrderedEmployees()
-    {
-        db=hlp.getReadableDatabase();
-        crsr = db.query(Employee.TABLE_EMPLOYEE, null, null, null, null, null, Employee.EMPLOYEE_ID, null);
-
-        int col1 = crsr.getColumnIndex(Employee.EMPLOYEE_ID);
-        int col2 = crsr.getColumnIndex(Employee.COMPANY);
-        int col3 = crsr.getColumnIndex(Employee.FIRST_NAME);
-        int col4 = crsr.getColumnIndex(Employee.LAST_NAME);
-        int col5 = crsr.getColumnIndex(Employee.PHONE);
-        int col6 = crsr.getColumnIndex(Employee.KEY_ID);
-
-        crsr.moveToFirst();
         orderEmployeesArray.add("id | key | name | phone | company");
-        while (!crsr.isAfterLast()) {
-            orderEmployeesArray.add(crsr.getString(col1) + " | " + crsr.getString(col6) + " | " + crsr.getString(col3) + " " + crsr.getString(col4) + " | " + crsr.getString(col5) + " | " + crsr.getString(col2));
-            crsr.moveToNext();
-        }
-        crsr.close();
-    }*/
+        namesArray.add("firstName lastName");
+        idsArray.add("id");
+
+        FBref.refEmployees.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot data : dataSnapshot.getChildren())
+                {
+                    orderEmployeesArray.add(data.getKey() + " | " + data.child("keyId").getValue() + " | " + data.child("firstName").getValue() + " " + data.child("lastName").getValue() + " | " + data.child("phone").getValue() + " | " + data.child("company").getValue());
+                    idsArray.add(data.getKey());
+                    namesArray.add(data.child("firstName").getValue() + " " + data.child("lastName").getValue());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long l) {
