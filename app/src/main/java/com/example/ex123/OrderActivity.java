@@ -1,6 +1,7 @@
  package com.example.ex123;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -9,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -20,6 +22,10 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,15 +42,13 @@ import java.util.TimeZone;
   */
  public class OrderActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     Spinner workerID, companiesNames;
-     SQLiteDatabase db;
-     HelperDB hlp;
-     Cursor crsr;
 
      AlertDialog.Builder adb;
      String companyID, workerId;
      ArrayList<String> workersID = new ArrayList<>();
+     ArrayList<String> companiesNamesList = new ArrayList<>();
+     ArrayList<String> companiesNumbers = new ArrayList<>();
      ArrayAdapter<String> idsAdp;
-     HashMap<String, Integer> companies = new HashMap<>();
      ArrayAdapter<String> companiesAdp;
 
     @Override
@@ -58,54 +62,63 @@ import java.util.TimeZone;
         workerID.setOnItemSelectedListener(this);
         companiesNames.setOnItemSelectedListener(this);
 
-        hlp = new HelperDB(this);
-
-        getSpinnersData();
-    }
-
-    /**
-        get all the employees id and company
-    */
-    private void getSpinnersData()
-    {
-        db=hlp.getReadableDatabase();
-        crsr = db.query(Employee.TABLE_EMPLOYEE, new String[]{Employee.EMPLOYEE_ID}, null, null, null, null, Employee.EMPLOYEE_ID + " DESC", null);
-
-        int col1 = crsr.getColumnIndex(Employee.EMPLOYEE_ID);
-
-        crsr.moveToFirst();
         workersID.add("your id");
-        while (!crsr.isAfterLast()) {
-            workersID.add(crsr.getString(col1));
-            crsr.moveToNext();
-        }
-        crsr.close();
-
-        crsr = db.query(Company.TABLE_COMPANY, new String[]{Company.COMPANY_NUMBER, Company.NAME}, null, null, null, null, Company.NAME + " DESC", null);
-        col1 = crsr.getColumnIndex(Company.COMPANY_NUMBER);
-        int col2 = crsr.getColumnIndex(Company.NAME);
-
-        crsr.moveToFirst();
-        while (!crsr.isAfterLast()) {
-            companies.put(crsr.getString(col2), crsr.getInt(col1));
-            crsr.moveToNext();
-        }
-        crsr.close();
-        db.close();
+        companiesNamesList.add("company name");
 
         idsAdp = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, workersID);
         workerID.setAdapter(idsAdp);
 
-        ArrayList<String> compniesNames = new ArrayList<>(companies.keySet());
-        compniesNames.add(0, "company name");
-        companiesAdp = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, compniesNames);
+        companiesAdp = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, companiesNamesList);
         companiesNames.setAdapter(companiesAdp);
+
+        getIds();
+        getCompanies();
     }
+
+    private void getCompanies()
+    {
+        FBref.refCompanies.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dS) {
+                for (DataSnapshot data : dS.getChildren())
+                {
+                    companiesNamesList.add((String) data.child("name").getValue());
+                    companiesNumbers.add(data.getKey());
+                }
+
+                companiesAdp.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+     private void getIds()
+     {
+         FBref.refEmployees.addListenerForSingleValueEvent(new ValueEventListener() {
+             @Override
+             public void onDataChange(@NonNull DataSnapshot dS) {
+                 for (DataSnapshot data : dS.getChildren())
+                 {
+                     workersID.add(data.getKey());
+                 }
+
+                 idsAdp.notifyDataSetChanged();
+             }
+
+             @Override
+             public void onCancelled(@NonNull DatabaseError databaseError) {
+
+             }
+         });
+     }
 
      /**
       * Make order
       *
-      * @param view the view
       */
      public void makeOrder(View view) {
         // if there are no workers or companies in db
@@ -179,46 +192,40 @@ import java.util.TimeZone;
      /**
       * Add order to db.
       *
-      * @param firstMeal the first meal
-      * @param mainMeal  the main meal
-      * @param extra     the extra
-      * @param dessert   the dessert
-      * @param drink     the drink
+      *
       */
      private void addOrderToDB(String firstMeal, String mainMeal, String extra, String dessert, String drink)
     {
-        // insert meal to db
-        ContentValues cv = new ContentValues();
+        FBref.refCounters.child("mealID").addListenerForSingleValueEvent(new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Long mealID = (Long) dataSnapshot.getValue();
 
-        cv.put(Meal.FIRST_MEAL, firstMeal);
-        cv.put(Meal.MAIN_MEAL, mainMeal);
-        cv.put(Meal.EXTRA, extra);
-        cv.put(Meal.DESSERT, dessert);
-        cv.put(Meal.DRINK, drink);
+                // update the mealID (for next usage)
+                FBref.refCounters.child("mealID").setValue(mealID + 1);
 
-        db = hlp.getWritableDatabase();
-        int mealId = (int) db.insert(Meal.TABLE_MEAL, null, cv);
-        db.close();
+                // insert meal to db
+                Meal meal = new Meal(Math.toIntExact(mealID), firstMeal, mainMeal, extra, dessert, drink);
+                FBref.refMeals.child(String.valueOf(mealID)).setValue(meal);
 
-        // insert order to db
-        Date date = new Date();
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                // insert order to db
+                Date date = new Date();
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        // Use Israel's time zone to format the date in
-        df.setTimeZone(TimeZone.getTimeZone("Asia/Jerusalem"));
-        String[] timeDate = df.format(date).split(" ");
+                // Use Israel's time zone to format the date in
+                df.setTimeZone(TimeZone.getTimeZone("Asia/Jerusalem"));
+                String[] timeDate = df.format(date).split(" ");
 
-        cv = new ContentValues();
+                Order order = new Order(timeDate[0], timeDate[1], workerId, Math.toIntExact(mealID), companyID);
+                FBref.refOrders.child(timeDate[0] + "@" + timeDate[1]).setValue(order);
+            }
 
-        cv.put(Order.ORDER_DATE, timeDate[0]);
-        cv.put(Order.ORDER_TIME, timeDate[1]);
-        cv.put(Order.WORKER_ID, workerId);
-        cv.put(Order.MEAL_ID, mealId);
-        cv.put(Order.COMPANY, companyID);
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-        db = hlp.getWritableDatabase();
-        db.insert(Order.TABLE_ORDER, null, cv);
-        db.close();
+            }
+        });
     }
 
     @Override
@@ -234,7 +241,7 @@ import java.util.TimeZone;
             if (companiesAdp.getItem(pos).equals("company name"))
                 companyID = null;
             else
-                companyID = String.valueOf(companies.get(companiesAdp.getItem(pos)));
+                companyID = companiesNamesList.get(pos - 1);
         }
     }
 

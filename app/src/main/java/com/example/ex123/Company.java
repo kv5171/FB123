@@ -7,24 +7,50 @@ package com.example.ex123;
  * The type Company database constants
  */
 public class Company {
-    /**
-     * The constant TABLE_COMPANY.
-     */
-    public static final String TABLE_COMPANY = "Companies";
-    /**
-     * The constant COMPANY_NUMBER.
-     */
-    public static final String COMPANY_NUMBER = "CompanyNumber";
-    /**
-     * The constant NAME.
-     */
-    public static final String NAME = "Name";
-    /**
-     * The constant FIRST_PHONE.
-     */
-    public static final String FIRST_PHONE = "FirstPhone";
-    /**
-     * The constant SECOND_PHONE.
-     */
-    public static final String SECOND_PHONE = "SecondPhone";
+    private int companyNumber;
+    private String name;
+    private String firstPhone;
+    private String secondPhone;
+
+    public Company(){}
+
+    public Company(int companyNumber, String name, String firstPhone, String secondPhone)
+    {
+        this.companyNumber = companyNumber;
+        this.name = name;
+        this.firstPhone = firstPhone;
+        this.secondPhone = secondPhone;
+    }
+
+    public String getFirstPhone() {
+        return firstPhone;
+    }
+
+    public void setFirstPhone(String firstPhone) {
+        this.firstPhone = firstPhone;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSecondPhone() {
+        return secondPhone;
+    }
+
+    public void setSecondPhone(String secondPhone) {
+        this.secondPhone = secondPhone;
+    }
+
+    public int getCompanyNumber() {
+        return companyNumber;
+    }
+
+    public void setCompanyNumber(int companyNumber) {
+        this.companyNumber = companyNumber;
+    }
 }

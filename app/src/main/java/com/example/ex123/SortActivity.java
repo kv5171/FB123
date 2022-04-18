@@ -28,10 +28,6 @@ public class SortActivity extends AppCompatActivity implements AdapterView.OnIte
     Spinner options;
     ArrayAdapter<String> adp;
 
-    SQLiteDatabase db;
-    HelperDB hlp;
-    Cursor crsr;
-
     String [] allOptions = {"show just ids", "show just names", "order Employees by id"};
     ArrayList<String> idsArray, namesArray, orderEmployeesArray;
 
@@ -49,20 +45,18 @@ public class SortActivity extends AppCompatActivity implements AdapterView.OnIte
                 R.layout.support_simple_spinner_dropdown_item, allOptions);
         options.setAdapter(adp);
 
-        hlp = new HelperDB(this);
-
         idsArray = new ArrayList<>();
         namesArray = new ArrayList<>();
         orderEmployeesArray = new ArrayList<>();
 
-        getIds();
-        getNames();
-        getOrderedEmployees();
+//        getIds();
+//        getNames();
+//        getOrderedEmployees();
     }
 
     /**
      *  get all id employees from the db
-     */
+
     private void getIds()
     {
         db=hlp.getReadableDatabase();
@@ -77,11 +71,11 @@ public class SortActivity extends AppCompatActivity implements AdapterView.OnIte
             crsr.moveToNext();
         }
         crsr.close();
-    }
+    }*/
 
     /**
      *  get all names employees from db
-     */
+
     private void getNames()
     {
         db=hlp.getReadableDatabase();
@@ -97,11 +91,11 @@ public class SortActivity extends AppCompatActivity implements AdapterView.OnIte
             crsr.moveToNext();
         }
         crsr.close();
-    }
+    }*/
 
     /**
      *  get all the id employees from the db sorted
-     */
+
     private void getOrderedEmployees()
     {
         db=hlp.getReadableDatabase();
@@ -121,7 +115,7 @@ public class SortActivity extends AppCompatActivity implements AdapterView.OnIte
             crsr.moveToNext();
         }
         crsr.close();
-    }
+    }*/
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long l) {

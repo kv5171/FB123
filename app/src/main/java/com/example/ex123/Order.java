@@ -7,28 +7,60 @@ package com.example.ex123;
  * The type Order.
  */
 public class Order {
-    /**
-     * The constant TABLE_ORDER.
-     */
-    public static final String TABLE_ORDER = "Orders";
-    /**
-     * The constant ORDER_DATE.
-     */
-    public static final String ORDER_DATE = "OrderDate";
-    /**
-     * The constant ORDER_TIME.
-     */
-    public static final String ORDER_TIME = "OrderTime";
-    /**
-     * The constant WORKER_ID.
-     */
-    public static final String WORKER_ID = "EmployeeId";
-    /**
-     * The constant MEAL_ID.
-     */
-    public static final String MEAL_ID = "MealId";
-    /**
-     * The constant COMPANY.
-     */
-    public static final String COMPANY = "Company";
+    private String orderDate;
+    private String orderTime;
+    private String employeeId;
+    private int mealId;
+    private String company;
+
+    public Order(){}
+
+    public Order(String orderDate, String orderTime, String employeeId, int mealId, String company)
+    {
+        this.orderDate = orderDate;
+        this.orderTime = orderTime;
+        this.employeeId = employeeId;
+        this.mealId = mealId;
+        this.company = company;
+    }
+
+    public String getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(String orderDate) {
+        this.orderDate = orderDate;
+    }
+
+    public String getOrderTime() {
+        return orderTime;
+    }
+
+    public void setOrderTime(String orderTime) {
+        this.orderTime = orderTime;
+    }
+
+    public String getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(String employeeId) {
+        this.employeeId = employeeId;
+    }
+
+    public int getMealId() {
+        return mealId;
+    }
+
+    public void setMealId(int mealId) {
+        this.mealId = mealId;
+    }
+
+    public String getCompany() {
+        return company;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
+    }
 }

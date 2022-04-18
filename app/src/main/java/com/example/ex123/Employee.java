@@ -7,32 +7,70 @@ package com.example.ex123;
  * The type Employee database constants
  */
 public class Employee {
-    /**
-     * The constant TABLE_EMPLOYEE.
-     */
-    public static final String TABLE_EMPLOYEE = "Employees";
-    /**
-     * The constant KEY_ID.
-     */
-    public static final String KEY_ID = "_id";
-    /**
-     * The constant LAST_NAME.
-     */
-    public static final String LAST_NAME = "LastName";
-    /**
-     * The constant FIRST_NAME.
-     */
-    public static final String FIRST_NAME = "FirstName";
-    /**
-     * The constant COMPANY.
-     */
-    public static final String COMPANY = "Company";
-    /**
-     * The constant EMPLOYEE_ID.
-     */
-    public static final String EMPLOYEE_ID = "EmployeeId";
-    /**
-     * The constant PHONE.
-     */
-    public static final String PHONE = "Phone";
+    private int keyId;
+    private String lastName;
+    private String firstName;
+    private String company;
+    private String EmployeeId;
+    private String Phone;
+
+    public Employee(){}
+
+    public Employee(int keyId, String lastName, String firstName, String company, String EmployeeId, String Phone)
+    {
+        this.keyId = keyId;
+        this.lastName = lastName;
+        this.firstName = firstName;
+        this.company = company;
+        this.EmployeeId = EmployeeId;
+        this.Phone = Phone;
+    }
+
+    public int getKeyId() {
+        return keyId;
+    }
+
+    public void setKeyId(int keyId) {
+        this.keyId = keyId;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getCompany() {
+        return company;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
+    }
+
+    public String getEmployeeId() {
+        return EmployeeId;
+    }
+
+    public void setEmployeeId(String employeeId) {
+        EmployeeId = employeeId;
+    }
+
+    public String getPhone() {
+        return Phone;
+    }
+
+    public void setPhone(String phone) {
+        Phone = phone;
+    }
 }

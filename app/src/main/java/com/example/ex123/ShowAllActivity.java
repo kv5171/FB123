@@ -27,9 +27,6 @@ public class ShowAllActivity extends AppCompatActivity implements AdapterView.On
     Spinner options;
     ListView lv;
     ArrayAdapter<String> adp;
-    SQLiteDatabase db;
-    HelperDB hlp;
-    Cursor crsr;
 
     String [] allOptions = {"employees", "companies", "meals", "orders"};
     ArrayList<String> employeesArray, companiesArray, mealsArray, ordersArray;
@@ -49,22 +46,20 @@ public class ShowAllActivity extends AppCompatActivity implements AdapterView.On
                 R.layout.support_simple_spinner_dropdown_item, allOptions);
         options.setAdapter(adp);
 
-        hlp = new HelperDB(this);
-
         employeesArray = new ArrayList<>();
         companiesArray = new ArrayList<>();
         mealsArray = new ArrayList<>();
         ordersArray = new ArrayList<>();
 
-        getEmployees();
-        getCompanies();
-        getMeals();
-        getOrders();
+//        getEmployees();
+//        getCompanies();
+//        getMeals();
+//        getOrders();
     }
 
     /**
      * get all employees from db
-     */
+
     private void getEmployees()
     {
         db=hlp.getReadableDatabase();
@@ -84,11 +79,11 @@ public class ShowAllActivity extends AppCompatActivity implements AdapterView.On
             crsr.moveToNext();
         }
         crsr.close();
-    }
+    }*/
 
     /**
      * get all companies from db
-     */
+
     private void getCompanies()
     {
         db=hlp.getReadableDatabase();
@@ -106,11 +101,11 @@ public class ShowAllActivity extends AppCompatActivity implements AdapterView.On
             crsr.moveToNext();
         }
         crsr.close();
-    }
+    }*/
 
     /**
      * get all meals from database
-     */
+
     private void getMeals()
     {
         db=hlp.getReadableDatabase();
@@ -130,11 +125,11 @@ public class ShowAllActivity extends AppCompatActivity implements AdapterView.On
             crsr.moveToNext();
         }
         crsr.close();
-    }
+    }*/
 
     /**
      * get all orders from database
-     */
+
     private void getOrders()
     {
         db=hlp.getReadableDatabase();
@@ -153,7 +148,7 @@ public class ShowAllActivity extends AppCompatActivity implements AdapterView.On
             crsr.moveToNext();
         }
         crsr.close();
-    }
+    }*/
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long l) {

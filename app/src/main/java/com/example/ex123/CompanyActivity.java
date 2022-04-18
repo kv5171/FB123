@@ -13,6 +13,10 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+
 /**
  * @author Keren Weintraub <kv5171@bs.amalnet.k12.il>
  * @version	1
@@ -21,9 +25,6 @@ import android.widget.Toast;
  */
 public class CompanyActivity extends AppCompatActivity {
     EditText companyNumber, companyName, firstPhone, secondPhone;
-
-    SQLiteDatabase db;
-    HelperDB hlp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +40,6 @@ public class CompanyActivity extends AppCompatActivity {
         companyNumber.setTransformationMethod(null);
         firstPhone.setTransformationMethod(null);
         secondPhone.setTransformationMethod(null);
-
-        hlp = new HelperDB(this);
     }
 
     /**
@@ -59,23 +58,31 @@ public class CompanyActivity extends AppCompatActivity {
         {
             Toast.makeText(CompanyActivity.this, "Inputs must have a value!", Toast.LENGTH_SHORT).show();
         }
-        else if(HelperFunc.checkInDB(Company.TABLE_COMPANY, companyNameString, Company.NAME, hlp) || HelperFunc.checkInDB(Company.TABLE_COMPANY, companyNumberString, Company.COMPANY_NUMBER, hlp) || HelperFunc.checkInDB(Company.TABLE_COMPANY, firstPhoneString, Company.FIRST_PHONE, hlp) || HelperFunc.checkInDB(Company.TABLE_COMPANY, secondPhoneString, Company.SECOND_PHONE, hlp))
-        {
-            Toast.makeText(CompanyActivity.this, "Data is in the db already!", Toast.LENGTH_SHORT).show();
-        }
         else {
-            ContentValues cv = new ContentValues();
+            FBref.refCompanies.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dS) {
+                    boolean dataNotInDB = true;
+                    for (DataSnapshot data : dS.getChildren()) {
+                        if ((data.child("name").getValue().equals(companyNameString)) || (String.valueOf(data.child("companyNumber").getValue()).equals(companyNumberString)) || (data.child("firstPhone").getValue().equals(firstPhoneString)) || (data.child("secondPhone").getValue().equals(secondPhoneString))) {
+                            dataNotInDB = false;
+                            break;
+                        }
+                    }
 
-            cv.put(Company.COMPANY_NUMBER, companyNumberString);
-            cv.put(Company.NAME, companyNameString);
-            cv.put(Company.FIRST_PHONE, firstPhoneString);
-            cv.put(Company.SECOND_PHONE, secondPhoneString);
+                    if (dataNotInDB) {
+                        Company company = new Company(Integer.parseInt(companyNumberString), companyNameString, firstPhoneString, secondPhoneString);
+                        FBref.refCompanies.child(companyNumberString).setValue(company);
+                        Toast.makeText(CompanyActivity.this, "Add company completed", Toast.LENGTH_SHORT).show();
+                    } else
+                        Toast.makeText(CompanyActivity.this, "Data is in the db already!", Toast.LENGTH_SHORT).show();
+                }
 
-            db = hlp.getWritableDatabase();
-            db.insert(Company.TABLE_COMPANY, null, cv);
-            db.close();
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            Toast.makeText(CompanyActivity.this, "Add company completed", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 

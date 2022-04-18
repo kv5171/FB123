@@ -18,7 +18,12 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * @author Keren Weintraub <kv5171@bs.amalnet.k12.il>
@@ -31,12 +36,10 @@ public class ChangePhoneActivity extends AppCompatActivity implements AdapterVie
     Spinner options;
     Button btn;
 
-    SQLiteDatabase db;
-    HelperDB hlp;
-    Cursor crsr;
-
-    String employeeId, currPhone;
-    ArrayList<String> idsArray;
+    String employeeId;
+    ArrayList<String> phones; // <id,phone>, <id,phone>
+    ArrayList<String> ids;
+    ArrayAdapter<String> adp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,12 +52,14 @@ public class ChangePhoneActivity extends AppCompatActivity implements AdapterVie
 
         options.setOnItemSelectedListener(this);
 
-        hlp = new HelperDB(this);
-        idsArray = new ArrayList<>();
+        ids = new ArrayList<>();
+        phones = new ArrayList<>();
+
+        ids.add("Your Id");
         getIds();
 
-        ArrayAdapter<String> adp = new ArrayAdapter<String>(this,
-                R.layout.support_simple_spinner_dropdown_item, idsArray);
+        adp = new ArrayAdapter<String>(this,
+                R.layout.support_simple_spinner_dropdown_item, ids);
         options.setAdapter(adp);
 
         phone.setTransformationMethod(null);
@@ -65,18 +70,23 @@ public class ChangePhoneActivity extends AppCompatActivity implements AdapterVie
      */
     private void getIds()
     {
-        db=hlp.getReadableDatabase();
-        crsr = db.query(Employee.TABLE_EMPLOYEE, new String[]{Employee.EMPLOYEE_ID}, null, null, null, null, null, null);
+        FBref.refEmployees.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dS) {
+                for (DataSnapshot data : dS.getChildren())
+                {
+                    phones.add((String) data.child("phone").getValue());
+                    ids.add(data.getKey());
+                }
 
-        int col1 = crsr.getColumnIndex(Employee.EMPLOYEE_ID);
+                adp.notifyDataSetChanged();
+            }
 
-        crsr.moveToFirst();
-        idsArray.add("Your Id");
-        while (!crsr.isAfterLast()) {
-            idsArray.add(crsr.getString(col1));
-            crsr.moveToNext();
-        }
-        crsr.close();
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     /**
@@ -91,16 +101,12 @@ public class ChangePhoneActivity extends AppCompatActivity implements AdapterVie
         {
             Toast.makeText(this, "Phone cant be null", Toast.LENGTH_SHORT).show();
         }
-        else if (currPhone.equals(phoneString))
+        else if (phones.get(ids.indexOf(employeeId) - 1).equals(phoneString))
         {
             Toast.makeText(this, "This is the same phone", Toast.LENGTH_SHORT).show();
         }
         else {
-            ContentValues cv = new ContentValues();
-            db = hlp.getWritableDatabase();
-            cv.put(Employee.PHONE, phoneString);
-            db.update(Employee.TABLE_EMPLOYEE, cv, Employee.PHONE + "=?", new String[]{currPhone});
-            db.close();
+            FBref.refEmployees.child(employeeId + "/phone").setValue(phoneString);
             Toast.makeText(this, "Phone has changed!", Toast.LENGTH_SHORT).show();
         }
     }
@@ -118,28 +124,13 @@ public class ChangePhoneActivity extends AppCompatActivity implements AdapterVie
             btn.setVisibility(View.VISIBLE);
 
             employeeId = (String) adapterView.getAdapter().getItem(pos);
-            getPhoneById();
+            phone.setText(phones.get(ids.indexOf(employeeId) - 1));
         }
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
 
-    }
-
-    /**
-     * get the phone by employee id
-     */
-    private void getPhoneById()
-    {
-        db=hlp.getReadableDatabase();
-        crsr = db.query(Employee.TABLE_EMPLOYEE, new String[]{Employee.PHONE}, Employee.EMPLOYEE_ID+"=?", new String[]{employeeId}, null, null, null, "1");
-
-        crsr.moveToFirst();
-        int col1 = crsr.getColumnIndex(Employee.PHONE);
-        currPhone = crsr.getString(col1);
-        phone.setText(currPhone);
-        crsr.close();
     }
 
     /**
