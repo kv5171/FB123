@@ -23,7 +23,7 @@ import java.util.ArrayList;
 /**
  * @author Keren Weintraub <kv5171@bs.amalnet.k12.il>
  * @version	1
- * @since  17/02/2022
+ * @since  27/04/2022
  * The type Employee activity.
  */
 public class EmployeeActivity extends AppCompatActivity {
@@ -46,7 +46,7 @@ public class EmployeeActivity extends AppCompatActivity {
     }
 
     /**
-     * Add employee to db.
+     * Add employee to fb.
      *
      * @param view the view
      */

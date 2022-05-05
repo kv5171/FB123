@@ -13,7 +13,7 @@ import android.view.View;
 /**
  * @author Keren Weintraub <kv5171@bs.amalnet.k12.il>
  * @version	1
- * @since  17/02/2022
+ * @since  27/04/2022
  * The type Main activity.
  */
 public class MainActivity extends AppCompatActivity {

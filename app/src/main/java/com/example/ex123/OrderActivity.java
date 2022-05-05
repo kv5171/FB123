@@ -34,14 +34,13 @@ import java.util.HashMap;
 import java.util.TimeZone;
 
  /**
-  * The type Order activity.
-  *
   * @author Keren Weintraub <kv5171@bs.amalnet.k12.il>
   * @version 1
-  * @since 17 /02/2022 The type Order activity.
+  * @since 27 /04/2022
+  * The type Order activity.
   */
  public class OrderActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
-    Spinner workerID, companiesNames;
+     Spinner workerID, companiesNames;
 
      AlertDialog.Builder adb;
      String companyID, workerId;
@@ -119,6 +118,7 @@ import java.util.TimeZone;
      /**
       * Make order
       *
+      * @param view the view
       */
      public void makeOrder(View view) {
         // if there are no workers or companies in db
@@ -190,9 +190,12 @@ import java.util.TimeZone;
 
 
      /**
-      * Add order to db.
-      *
-      *
+      * Add order to fb.
+      *@param firstMeal the first meal
+      *@param mainMeal  the main meal
+      *@param extra     the extra
+      *@param dessert   the dessert
+      *@param drink     the drink
       */
      private void addOrderToDB(String firstMeal, String mainMeal, String extra, String dessert, String drink)
     {

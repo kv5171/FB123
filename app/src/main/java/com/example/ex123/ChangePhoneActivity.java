@@ -28,7 +28,7 @@ import java.util.HashMap;
 /**
  * @author Keren Weintraub <kv5171@bs.amalnet.k12.il>
  * @version	1
- * @since  17/02/2022
+ * @since  27/04/2022
  * The type Change phone activity.
  */
 public class ChangePhoneActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
@@ -66,7 +66,7 @@ public class ChangePhoneActivity extends AppCompatActivity implements AdapterVie
     }
 
     /**
-     * get all employees id from db
+     * get all employees id from fb
      */
     private void getIds()
     {
@@ -90,7 +90,7 @@ public class ChangePhoneActivity extends AppCompatActivity implements AdapterVie
     }
 
     /**
-     * Apply the phone in db
+     * Apply the phone in fb
      *
      * @param view the view
      */

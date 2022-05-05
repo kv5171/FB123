@@ -25,7 +25,7 @@ import java.util.ArrayList;
 /**
  * @author Keren Weintraub <kv5171@bs.amalnet.k12.il>
  * @version	1
- * @since  17/02/2022
+ * @since  27/04/2022
  * The type Show all activity.
  */
 public class ShowAllActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
@@ -63,7 +63,7 @@ public class ShowAllActivity extends AppCompatActivity implements AdapterView.On
     }
 
     /**
-     * get all employees from db
+     * get all employees from fb
      */
     private void getEmployees()
     {
@@ -86,7 +86,7 @@ public class ShowAllActivity extends AppCompatActivity implements AdapterView.On
     }
 
     /**
-     * get all companies from db
+     * get all companies from fb
      */
     private void getCompanies()
     {
@@ -109,7 +109,7 @@ public class ShowAllActivity extends AppCompatActivity implements AdapterView.On
     }
 
     /**
-     * get all meals from database
+     * get all meals from fb
      */
     private void getMeals()
     {
@@ -132,7 +132,7 @@ public class ShowAllActivity extends AppCompatActivity implements AdapterView.On
     }
 
     /**
-     * get all orders from database
+     * get all orders from fb
      */
     private void getOrders()
     {

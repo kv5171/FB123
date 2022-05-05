@@ -13,7 +13,7 @@ import android.view.View;
  * The type Credits activity.
  * @author Keren Weintraub <kv5171@bs.amalnet.k12.il>
  * @version	1
- * @since  17/02/2022
+ * @since  27/04/2022
  * short description: This activity show the credits of the app
  */
 public class CreditsActivity extends AppCompatActivity {

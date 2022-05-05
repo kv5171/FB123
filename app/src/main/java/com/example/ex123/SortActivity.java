@@ -14,9 +14,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -24,7 +26,7 @@ import java.util.ArrayList;
 /**
  * @author Keren Weintraub <kv5171@bs.amalnet.k12.il>
  * @version	1
- * @since  17/02/2022
+ * @since  27/04/2022
  * The type Sort activity.
  */
 public class SortActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
@@ -32,7 +34,7 @@ public class SortActivity extends AppCompatActivity implements AdapterView.OnIte
     Spinner options;
     ArrayAdapter<String> adp;
 
-    String [] allOptions = {"choose option", "show just ids", "show just names", "order Employees by id"};
+    String [] allOptions = {"choose option", "show just ids", "names by lastName order", "Employees by keyId order"};
     ArrayList<String> idsArray, namesArray, orderEmployeesArray;
 
     @Override
@@ -53,23 +55,68 @@ public class SortActivity extends AppCompatActivity implements AdapterView.OnIte
         namesArray = new ArrayList<>();
         orderEmployeesArray = new ArrayList<>();
 
-        getData();
+        getIds();
+        getNames();
+        getEmployees();
     }
 
-    private void getData()
+    /**
+     *  get all id employees from the fb
+     */
+    private void getIds()
     {
-        orderEmployeesArray.add("id | key | name | phone | company");
-        namesArray.add("firstName lastName");
         idsArray.add("id");
+        Query query = FBref.refEmployees.orderByKey();
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot data : dataSnapshot.getChildren())
+                {
+                    idsArray.add(data.getKey());
+                }
+            }
 
-        FBref.refEmployees.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+    }
+
+    /**
+     *  get all names employees from fb
+     */
+    private void getNames()
+    {
+        namesArray.add("firstName lastName");
+        Query query = FBref.refEmployees.orderByChild("lastName");
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot data : dataSnapshot.getChildren())
+                {
+                    namesArray.add(data.child("firstName").getValue() + " " + data.child("lastName").getValue());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    /**
+     *  get all the id employees from the fb sorted
+     */
+    private void getEmployees(){
+        orderEmployeesArray.add("id | key | name | phone | company");
+        Query query = FBref.refEmployees.orderByChild("keyId");
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot data : dataSnapshot.getChildren())
                 {
                     orderEmployeesArray.add(data.getKey() + " | " + data.child("keyId").getValue() + " | " + data.child("firstName").getValue() + " " + data.child("lastName").getValue() + " | " + data.child("phone").getValue() + " | " + data.child("company").getValue());
-                    idsArray.add(data.getKey());
-                    namesArray.add(data.child("firstName").getValue() + " " + data.child("lastName").getValue());
                 }
             }
 
@@ -84,13 +131,19 @@ public class SortActivity extends AppCompatActivity implements AdapterView.OnIte
     public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long l) {
         switch (pos) {
             case 0:
-                adp = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, idsArray);
+                lv.setVisibility(View.INVISIBLE);
                 break;
             case 1:
-                adp = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, namesArray);
+                adp = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, idsArray);
+                lv.setVisibility(View.VISIBLE);
                 break;
             case 2:
+                adp = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, namesArray);
+                lv.setVisibility(View.VISIBLE);
+                break;
+            case 3:
                 adp = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, orderEmployeesArray);
+                lv.setVisibility(View.VISIBLE);
                 break;
         }
         lv.setAdapter(adp);
